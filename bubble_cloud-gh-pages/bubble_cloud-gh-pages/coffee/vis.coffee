@@ -11,28 +11,43 @@ Bubbles = () ->
   label = null
   margin = {top: 5, right: 0, bottom: 0, left: 0}
   # largest size for our bubbles
-  maxRadius = 65
+  maxRadius = 80
+  minRadius = 20
 
   # this scale will be used to size our bubbles
-  rScale = d3.scale.sqrt().range([0,maxRadius])
+  rScale = d3.scale.sqrt().range([minRadius,maxRadius])
+
   
   # I've abstracted the data value used to size each
   # into its own function. This should make it easy
   # to switch out the underlying dataset
-  rValue = (d) -> parseInt(d.count)
+  rValue = (d) -> parseInt(d.Popularity)
 
   # function to define the 'id' of a data element
   #  - used to bind the data uniquely to the force nodes
   #   and for url creation
   #  - should make it easier to switch out dataset
   #   for your own
-  idValue = (d) -> d.name
+  idValue = (d) -> d.TOPIC
 
   # function to define what to display in each bubble
   #  again, abstracted to ease migration to 
   #  a different dataset if desired
-  textValue = (d) -> d.name
+  textValue = (d) ->
+    console.log(parseInt(d.sentiment))
+    return d.TOPIC
 
+  # function to define which colour each
+  #  node is, depending on the average snetiment 
+  #  positive, negative or neutral
+  sentiment = (d) -> 
+    if parseInt(d.sentiment) == -1 
+      return "bubble-node-negative"
+    if parseInt(d.sentiment) == 0 
+      return "bubble-node-neutral"
+    if parseInt(d.sentiment) == 1
+      return "bubble-node-poitive"
+ 
   # constants to control how
   # collision look and act
   collisionPadding = 4
@@ -55,7 +70,7 @@ Bubbles = () ->
   # ---
   transformData = (rawData) ->
     rawData.forEach (d) ->
-      d.count = parseInt(d.count)
+      d.count = parseInt(d.Popularity)
       rawData.sort(() -> 0.5 - Math.random())
     rawData
 
@@ -105,7 +120,10 @@ Bubbles = () ->
       # setup the radius scale's domain now that
       # we have some data
       maxDomainValue = d3.max(data, (d) -> rValue(d))
-      rScale.domain([0, maxDomainValue])
+      minDomainValue = d3.min(data, (d) -> rValue(d))
+      fieldName = "Average sentiment"
+      sent = data.fieldName
+      rScale.domain([minDomainValue, maxDomainValue])
 
       # a fancy way to setup svg element
       svg = d3.select(this).selectAll("svg").data([data])
@@ -157,7 +175,6 @@ Bubbles = () ->
 
     # start up the force layout
     force.nodes(data).start()
-
     # call our update methods to do the creation and layout work
     updateNodes()
     updateLabels()
@@ -170,9 +187,8 @@ Bubbles = () ->
     # data to the (currently) empty 'bubble-node selection'.
     # if you want to use your own data, you just need to modify what
     # idValue returns
-    node = node.selectAll(".bubble-node").data(data, (d) -> idValue(d))
-
-    # we don't actually remove any nodes from our data in this example 
+    
+    node = node.selectAll(".bubble-node").data(data, (d) -> idValue(d))    # we don't actually remove any nodes from our data in this example 
     # but if we did, this line of code would remove them from the
     # visualization as well
     node.exit().remove()
@@ -181,7 +197,7 @@ Bubbles = () ->
     # the styling comes from the css
     node.enter()
       .append("a")
-      .attr("class", "bubble-node")
+      .attr("class", (d) ->sentiment(d))
       .attr("xlink:href", (d) -> "##{encodeURIComponent(idValue(d))}")
       .call(force.drag)
       .call(connectEvents)
@@ -221,8 +237,8 @@ Bubbles = () ->
     # - remember to add the 'px' at the end as we are dealing with 
     #  styling divs
     label
-      .style("font-size", (d) -> Math.max(8, rScale(rValue(d) / 2)) + "px")
-      .style("width", (d) -> 2.5 * rScale(rValue(d)) + "px")
+      .style("font-size", (d) -> Math.max(8, rScale(rValue(d) / 18)) + "px")
+      .style("width", (d) -> 1 * rScale(rValue(d)) + "px")
 
     # interesting hack to get the 'true' text width
     # - create a span inside the label
@@ -233,7 +249,7 @@ Bubbles = () ->
     # - remove the extra span
     label.append("span")
       .text((d) -> textValue(d))
-      .each((d) -> d.dx = Math.max(2.5 * rScale(rValue(d)), this.getBoundingClientRect().width))
+      .each((d) -> d.dx = Math.max(1 * rScale(rValue(d)), this.getBoundingClientRect().width))
       .remove()
 
     # reset the width of the label to the actual width
@@ -405,7 +421,7 @@ root.plotData = (selector, data, plot) ->
     .call(plot)
 
 texts = [
-  {key:"sherlock",file:"top_sherlock.csv",name:"The Adventures of Sherlock Holmes"}
+  {key:"sherlock",file:"data.csv",name:"The Adventures of Sherlock Holmes"}
   {key:"aesop",file:"top_aesop.csv",name:"Aesop's Fables"}
   {key:"alice",file:"alice.csv",name:"Alice's Adventures in Wonderland"}
   {key:"gulliver",file:"top_gulliver.csv",name:"Gulliver's Travels"}

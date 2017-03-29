@@ -50,9 +50,19 @@ header {
   pointer-events: all;
 }
 
-.bubble-node {
+.bubble-node-poitive {
   /* fill: #d1e0f3; */
   fill: #DCE9BE;
+}
+
+.bubble-node-neutral {
+  /* fill: #d1e0f3; */
+  fill: #cce6ff;
+}
+
+.bubble-node-negative {
+  /* fill: #d1e0f3; */
+  fill: #ffad99;
 }
 
 .bubble-hover {
@@ -60,9 +70,25 @@ header {
   fill: #E8E9E7;
 }
 
-.bubble-selected {
+.bubble-selected-positive{
   /* fill: #a8c8ee;  */
   fill: #CEE98F;
+  /* stroke: #6081a3; */
+  stroke: #A6BA92;
+  stroke-width: 1.5px;
+}
+
+.bubble-selected-neutral{
+  /* fill: #a8c8ee;  */
+  fill: #E8E9E7;
+  /* stroke: #6081a3; */
+  stroke: #A6BA92;
+  stroke-width: 1.5px;
+}
+
+.bubble-selected-negative{
+  /* fill: #a8c8ee;  */
+  fill: #ffad99;
   /* stroke: #6081a3; */
   stroke: #A6BA92;
   stroke-width: 1.5px;
@@ -86,7 +112,7 @@ a.bubble-label {
 
 .bubble-label .bubble-label-value {
   font: 11px sans-serif;
-  white-space: nowrap;
+  white-space: wrap;
 }
 
 footer p {
