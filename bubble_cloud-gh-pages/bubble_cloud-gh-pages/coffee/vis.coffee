@@ -11,7 +11,7 @@ Bubbles = () ->
   label = null
   margin = {top: 5, right: 0, bottom: 0, left: 0}
   # largest size for our bubbles
-  maxRadius = 8000
+  maxRadius = 80
   minRadius = 20
 
   # this scale will be used to size our bubbles
@@ -445,11 +445,11 @@ $ ->
   # we are storing the current text in the search component
   # just to make things easy
   key = decodeURIComponent(location.search).replace('?',"")
-  text = "1490814000-1490817600"
+  text = "1490194800-1490198400"
 
   # default to the first text if something gets messed up
   if !text
-    text = "1490814000-1490817600"
+    text = "1490194800-1490198400"
 
   # bind change in jitter range slider
   # to update the plot's jitter
@@ -461,9 +461,9 @@ $ ->
     .on "input", () ->
       plot.time(parseFloat(this.output.value))
       console.log(parseFloat(this.output.value))
-      temp = (parseFloat(this.output.value) - 15) * 86400
-      val1 = 1489536000 + temp
-      val2 = val1 + 86400
+      temp = (parseFloat(this.output.value) - 22) * 3600
+      val1 = 1490194800 + temp
+      val2 = val1 + 3600
       key = val1 + '-' + val2
       console.log(key)
       location.replace("#")
@@ -481,5 +481,5 @@ $ ->
   d3.select("#book-title").html(text.name)
 
   # load our data
-  d3.csv("interval/#{text}/data.csv", display)
+  d3.csv("data/#{text}/data.csv", display)
 
