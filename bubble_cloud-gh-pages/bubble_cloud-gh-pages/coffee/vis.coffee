@@ -11,7 +11,7 @@ Bubbles = () ->
   label = null
   margin = {top: 5, right: 0, bottom: 0, left: 0}
   # largest size for our bubbles
-  maxRadius = 80
+  maxRadius = 8000
   minRadius = 20
 
   # this scale will be used to size our bubbles
@@ -59,6 +59,7 @@ Bubbles = () ->
   # - jitter controls the 'jumpiness'
   #  of the collisions
   jitter = 0.5
+  time = 15
 
   # ---
   # tweaks our dataset to get it into the
@@ -378,6 +379,11 @@ Bubbles = () ->
     jitter = _
     force.start()
     chart
+    
+  chart.time = (_) ->
+    if !arguments.length
+      return time
+
 
   # ---
   # public getter/setter for height variable
@@ -420,12 +426,7 @@ root.plotData = (selector, data, plot) ->
     .datum(data)
     .call(plot)
 
-texts = [
-  {key:"sherlock",file:"data.csv",name:"The Adventures of Sherlock Holmes"}
-  {key:"aesop",file:"top_aesop.csv",name:"Aesop's Fables"}
-  {key:"alice",file:"alice.csv",name:"Alice's Adventures in Wonderland"}
-  {key:"gulliver",file:"top_gulliver.csv",name:"Gulliver's Travels"}
-]
+
 
 # ---
 # jQuery document ready.
@@ -443,22 +444,31 @@ $ ->
 
   # we are storing the current text in the search component
   # just to make things easy
-  key = decodeURIComponent(location.search).replace("?","")
-  text = texts.filter((t) -> t.key == key)[0]
+  key = decodeURIComponent(location.search).replace('?',"")
+  text = "1490814000-1490817600"
 
   # default to the first text if something gets messed up
   if !text
-    text = texts[0]
-
-  # select the current text in the drop-down
-  $("#text-select").val(key)
+    text = "1490814000-1490817600"
 
   # bind change in jitter range slider
   # to update the plot's jitter
   d3.select("#jitter")
     .on "input", () ->
       plot.jitter(parseFloat(this.output.value))
-
+      
+  d3.select("#time")
+    .on "input", () ->
+      plot.time(parseFloat(this.output.value))
+      console.log(parseFloat(this.output.value))
+      temp = (parseFloat(this.output.value) - 15) * 86400
+      val1 = 1489536000 + temp
+      val2 = val1 + 86400
+      key = val1 + '-' + val2
+      console.log(key)
+      location.replace("#")
+      location.search = encodeURIComponent(key)
+      
   # bind change in drop down to change the
   # search url and reset the hash url
   d3.select("#text-select")
@@ -471,5 +481,5 @@ $ ->
   d3.select("#book-title").html(text.name)
 
   # load our data
-  d3.csv("data/#{text.file}", display)
+  d3.csv("interval/#{text}/data.csv", display)
 
