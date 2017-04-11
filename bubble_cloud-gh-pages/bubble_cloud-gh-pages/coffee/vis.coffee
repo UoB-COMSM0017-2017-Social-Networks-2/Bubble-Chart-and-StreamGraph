@@ -34,19 +34,18 @@ Bubbles = () ->
   #  again, abstracted to ease migration to 
   #  a different dataset if desired
   textValue = (d) ->
-    console.log(parseInt(d.sentiment))
     return d.TOPIC
 
   # function to define which colour each
   #  node is, depending on the average snetiment 
   #  positive, negative or neutral
-  sentiment = (d) -> 
-    if parseInt(d.sentiment) == -1 
-      return "bubble-node-negative"
-    if parseInt(d.sentiment) == 0 
-      return "bubble-node-neutral"
-    if parseInt(d.sentiment) == 1
-      return "bubble-node-poitive"
+  #sentiment = (d) -> 
+  #  if parseInt(d.sentiment) == -1 
+  #    return "bubble-node-negative"
+  #  if parseInt(d.sentiment) == 0 
+  #    return "bubble-node-neutral"
+  #  if parseInt(d.sentiment) == 1
+  #    return "bubble-node-poitive"
  
   # constants to control how
   # collision look and act
@@ -198,7 +197,7 @@ Bubbles = () ->
     # the styling comes from the css
     node.enter()
       .append("a")
-      .attr("class", (d) ->sentiment(d))
+      .attr("class", (d) ->"bubble-node-neutral")
       .attr("xlink:href", (d) -> "##{encodeURIComponent(idValue(d))}")
       .call(force.drag)
       .call(connectEvents)
@@ -445,12 +444,7 @@ $ ->
   # we are storing the current text in the search component
   # just to make things easy
   key = decodeURIComponent(location.search).replace('?',"")
-  text = "1490194800-1490198400"
-
-  # default to the first text if something gets messed up
-  if !text
-    text = "1490194800-1490198400"
-
+  
   # bind change in jitter range slider
   # to update the plot's jitter
   d3.select("#jitter")
@@ -477,9 +471,7 @@ $ ->
       location.replace("#")
       location.search = encodeURIComponent(key)
 
-  # set the book title from the text name
-  d3.select("#book-title").html(text.name)
 
   # load our data
-  d3.csv("data/#{text}/data.csv", display)
+  d3.csv("data/#{key}/data.csv", display)
 
